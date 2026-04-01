@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RendaPlay - Painel Admin</title>
+    <style>
+        /* ================= ESTILOS GLOBAIS ================= */
+        :root {
+            --bg-dark: #0b0f19; --bg-card: #131c2f; --border: #1e293b;
+            --primary: #38bdf8; --success: #10b981; --warning: #facc15; --danger: #f43f5e;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+        /* ================= MENU LATERAL (SIDEBAR) ================= */
+        .sidebar { width: 250px; background-color: var(--bg-card); border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; }
+        .logo-area { text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+        .logo-area h1 { color: var(--primary); font-size: 1.5rem; font-weight: 900; }
+        .logo-area span { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .nav-menu { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
+        .nav-item { padding: 12px 15px; border-radius: 8px; color: var(--text-muted); text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 10px; transition: all 0.3s; cursor: pointer; }
+        .nav-item:hover { background-color: rgba(56, 189, 248, 0.1); color: var(--primary); }
+        .nav-item.active { background-color: var(--primary); color: #000; }
+
+        .logout-btn { margin-top: auto; background: rgba(244, 63, 94, 0.1); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.3); text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .logout-btn:hover { background: var(--danger); color: #fff; }
+
+        /* ================= ÁREA PRINCIPAL ================= */
+        .main-content { flex-grow: 1; padding: 30px; overflow-y: auto; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header-top h2 { font-size: 1.8rem; font-weight: 800; }
+        .admin-badge { background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: bold; font-size: 0.9rem; }
+
+        /* ================= CARDS FINANCEIROS (40/30/30) ================= */
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+        .card::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+        .card.total::before { background: var(--primary); }
+        .card.premios::before { background: var(--warning); }
+        .card.op::before { background: #8b5cf6; }
+        .card.lucro::before { background: var(--success); }
+
+        .card-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 10px; }
+        .card-value { font-size: 2rem; font-weight: 900; color: #fff; margin-bottom: 5px; }
+        .card-desc { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* ================= TABELAS E SEÇÕES ================= */
+        .section-box { background: var(--bg-card); padding: 25px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 30px; }
+        .section-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 20px; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { padding: 12px 15px; border-bottom: 2px solid var(--border); color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #fff; font-size: 0.95rem; }
+        tr:hover td { background-color: rgba(255,255,255,0.02); }
+
+        .status-badge { padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; }
+        .status-pendente { background: rgba(250, 204, 21, 0.1); color: var(--warning); border: 1px solid rgba(250, 204, 21, 0.3); }
+        .status-pago { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        .btn-action { background: var(--success); color: #fff; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-action:hover { background: #059669; }
+        .btn-action:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+
+        /* ================= RESPONSIVIDADE ================= */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; padding: 15px; border-right: none; border-bottom: 1px solid var(--border); }
+            .nav-menu { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+            .nav-item { padding: 8px 12px; font-size: 0.9rem; }
+            .main-content { padding: 15px; }
+            .cards-grid { grid-template-columns: 1fr 1fr; }
+            table { display: block; overflow-x: auto; white-space: nowrap; }
+        }
+        @media (max-width: 480px) {
+            .cards-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-area">
+            <h1>RendaPlay</h1>
+            <span>Painel de Controle</span>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-item active">📊 Dashboard</div>
+            <div class="nav-item">💸 Fila de Pagamentos</div>
+            <div class="nav-item">👥 Usuários Ativos</div>
+            <div class="nav-item">⚙️ Configurações</div>
+        </nav>
+        <button class="logout-btn" onclick="sair()">Sair do Painel</button>
+    </aside>
+
+    <main class="main-content">
+        <div class="header-top">
+            <h2>Visão Geral Financeira</h2>
+            <div class="admin-badge">🔴 Ao Vivo - 546 Online</div>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card total">
+                <div class="card-title">Receita Bruta Total</div>
+                <div class="card-value" id="val-total">R$ 0,00</div>
+                <div class="card-desc">Anúncios (AdSense) + Venda de Dicas</div>
+            </div>
+            <div class="card premios">
+                <div class="card-title">Fila de Prêmios (40%)</div>
+                <div class="card-value" id="val-premios" style="color: var(--warning);">R$ 0,00</div>
+                <div class="card-desc">Reservado para saque dos jogadores</div>
+            </div>
+            <div class="card op">
+                <div class="card-title">Operação (30%)</div>
+                <div class="card-value" id="val-op" style="color: #a78bfa;">R$ 0,00</div>
+                <div class="card-desc">Servidor, Manutenção, Marketing</div>
+            </div>
+            <div class="card lucro">
+                <div class="card-title">Lucro Líquido (30%)</div>
+                <div class="card-value" id="val-lucro" style="color: var(--success);">R$ 0,00</div>
+                <div class="card-desc">Caixa livre da plataforma</div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">
+                Fila de Saques (PIX)
+                <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: normal;">Pedidos recentes de R$ 100,00</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Jogador</th>
+                        <th>Chave PIX (CPF/Email)</th>
+                        <th>Data/Hora</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-saques">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">Últimas Transações (Entradas)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Origem</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                        <th>Horário</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-logs">
+                    </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        // Inicialização
+        window.onload = () => {
+            carregarDadosFinanceiros();
+            gerarSaquesFalsos();
+            gerarLogsIniciais();
+            iniciarSimuladorTempoReal();
+        };
+
+        // ================= LÓGICA FINANCEIRA =================
+        function carregarDadosFinanceiros() {
+            // Tenta puxar a receita real que o usuário gerou testando o jogo no outro arquivo
+            let receitaSalva = parseFloat(localStorage.getItem("rp_admin_rev_v5"));
+            
+            // Se for nulo ou zero, coloca um valor simulado bonito para ver o painel funcionando
+            if (!receitaSalva || receitaSalva === 0) {
+                receitaSalva = 12540.50; // Valor inicial simulado
+                localStorage.setItem("rp_admin_rev_v5", receitaSalva);
+            }
+
+            atualizarCards(receitaSalva);
+        }
+
+        function atualizarCards(total) {
+            const premios = total * 0.40;
+            const op = total * 0.30;
+            const lucro = total * 0.30;
+
+            document.getElementById("val-total").innerText = formatarMoeda(total);
+            document.getElementById("val-premios").innerText = formatarMoeda(premios);
+            document.getElementById("val-op").innerText = formatarMoeda(op);
+            document.getElementById("val-lucro").innerText = formatarMoeda(lucro);
+        }
+
+        // ================= TABELA DE SAQUES (PIX) =================
+        let saques = [
+            { id: 1, jogador: "Lucas_Pro", chave: "lucas@email.com", data: "Hoje, 14:30", status: "Pendente" },
+            { id: 2, jogador: "Maria_Win", chave: "123.456.789-00", data: "Hoje, 14:15", status: "Pendente" },
+            { id: 3, jogador: "GamerX", chave: "(11) 99999-9999", data: "Hoje, 13:50", status: "Pago" },
+            { id: 4, jogador: "Ju_Ninja", chave: "ju.ninja@pix.com", data: "Hoje, 11:20", status: "Pago" }
+        ];
+
+        function gerarSaquesFalsos() {
+            const tbody = document.getElementById("tabela-saques");
+            tbody.innerHTML = "";
+
+            saques.forEach(saque => {
+                let btn = saque.status === "Pendente" 
+                    ? `<button class="btn-action" onclick="aprovarPix(${saque.id})">Aprovar PIX</button>` 
+                    : `<button class="btn-action" disabled>PIX Enviado</button>`;
+                
+                let badge = saque.status === "Pendente"
+                    ? `<span class="status-badge status-pendente">Aguardando</span>`
+                    : `<span class="status-badge status-pago">Concluído</span>`;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight:bold; color:var(--primary);">${saque.jogador}</td>
+                        <td>${saque.chave}</td>
+                        <td style="color:var(--text-muted);">${saque.data}</td>
+                        <td>${badge}</td>
+                        <td>${btn}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function aprovarPix(id) {
+            let saque = saques.find(s => s.id === id);
+            if(saque) {
+                // Deduz 100 reais da receita total (pois saiu da fila de prêmios)
+                let receitaAtual = parseFloat(localStorage.getItem("rp_admin_rev_v5"));
+                // Na vida real, não deduziria da "Receita Bruta", mas abateria do passivo. 
+                // Para o layout visual, vamos apenas alterar o status.
+                
+                saque.status = "Pago";
+                gerarSaquesFalsos();
+                alert(`✅ PIX de R$ 100,00 aprovado com sucesso para ${saque.jogador}!`);
+            }
+        }
+
+        // ================= LOGS EM TEMPO REAL =================
+        let logs = [
+            { origem: "Compra de Dica", desc: "Dica 3 - Arena 2 (Palavra Secreta)", valor: 2.00, hora: "Agora mesmo" },
+            { origem: "AdSense (Anúncio)", desc: "Visualização Modo Grátis (30s)", valor: 0.05, hora: "1 min atrás" },
+            { origem: "Compra de Dica", desc: "Dica 1 - Arena 1 (Quem Sou)", valor: 0.50, hora: "3 mins atrás" },
+            { origem: "AdSense (Anúncio)", desc: "Visualização Banner Destaque", valor: 0.02, hora: "5 mins atrás" },
+        ];
+
+        function gerarLogsIniciais() {
+            renderizarLogs();
+        }
+
+        function renderizarLogs() {
+            const tbody = document.getElementById("tabela-logs");
+            tbody.innerHTML = "";
+            logs.forEach(log => {
+                let corValor = log.origem === "AdSense (Anúncio)" ? "var(--warning)" : "var(--primary)";
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="font-weight:bold;">${log.origem}</td>
+                        <td style="color:var(--text-muted);">${log.desc}</td>
+                        <td style="color:${corValor}; font-weight:bold;">+ ${formatarMoeda(log.valor)}</td>
+                        <td style="color:var(--text-muted); font-size:0.85rem;">${log.hora}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function iniciarSimuladorTempoReal() {
+            // A cada 8 segundos simula uma nova entrada de dinheiro
+            setInterval(() => {
+                let tipos = [
+                    { origem: "AdSense (Anúncio)", desc: "Visualização Modo Grátis", valor: 0.05 },
+                    { origem: "AdSense (Anúncio)", desc: "Clique no Banner Rodapé", valor: 0.15 },
+                    { origem: "Compra de Dica", desc: "Dica 2 comprada - Arena 3", valor: 1.50 },
+                    { origem: "Compra de Dica", desc: "Dica 1 comprada - Arena 1", valor: 0.50 }
+                ];
+                let novo = tipos[Math.floor(Math.random() * tipos.length)];
+                novo.hora = "Agora mesmo";
+
+                // Atualiza a lista de logs
+                logs.unshift(novo);
+                if(logs.length > 5) logs.pop();
+                renderizarLogs();
+
+                // Adiciona o valor na Receita Bruta
+                let receitaAtual = parseFloat(localStorage.getItem("rp_admin_rev_v5"));
+                receitaAtual += novo.valor;
+                localStorage.setItem("rp_admin_rev_v5", receitaAtual);
+                atualizarCards(receitaAtual);
+
+            }, 8000);
+        }
+
+        function sair() {
+            alert("Desconectando do Painel Admin...");
+            window.location.href = "index.html"; // Volta para o jogo
+        }
+    </script>
+</body>
+</html>

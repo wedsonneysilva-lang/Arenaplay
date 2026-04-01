@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RendaPlay - Plataforma Profissional</title>
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1650867304804210" crossorigin="anonymous"></script>
+
+    <style>
+        /* ================= ESTILOS GLOBAIS E MOBILE ================= */
+        :root {
+            --bg-dark: #0b0f19; --bg-card: #131c2f; --border: #1e293b;
+            --primary: #38bdf8; --success: #10b981; --warning: #facc15; --danger: #f43f5e;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 10px; overflow-x: hidden; }
+
+        .hidden { display: none !important; }
+        .btn { padding: 14px 20px; font-size: 1rem; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: linear-gradient(135deg, #0ea5e9, #38bdf8); color: #fff; }
+        .btn-success { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
+        .btn-warning { background: linear-gradient(135deg, #d97706, #facc15); color: #000; }
+        .btn-danger { background: linear-gradient(135deg, #e11d48, #f43f5e); color: #fff; }
+        .btn-dark { background: #1e293b; color: #fff; border: 1px solid var(--border); }
+        .btn:disabled { background: #334155 !important; color: #64748b !important; cursor: not-allowed !important; box-shadow: none; }
+
+        /* ================= BANNERS ADSENSE ================= */
+        .banner-destaque { background: linear-gradient(90deg, #10b981, #facc15); color: #000; width: 100%; max-width: 800px; padding: 12px; border-radius: 10px; text-align: center; font-size: 0.95rem; font-weight: 900; margin-bottom: 15px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); text-transform: uppercase; letter-spacing: 1px;}
+        .ad-container { width: 100%; max-width: 800px; background-color: var(--bg-card); border: 1px dashed var(--border); border-radius: 10px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; min-height: 90px; }
+        .ad-container::before { content: "Publicidade"; position: absolute; top: 0; right: 0; background: var(--border); color: var(--text-muted); font-size: 0.6rem; padding: 2px 8px; border-bottom-left-radius: 6px; z-index: 10;}
+        .ad-top { margin-bottom: 15px; } 
+        .ad-footer { margin-top: 20px; }
+
+        /* ================= PAINEL DO USUÁRIO ================= */
+        .painel-usuario { background: var(--bg-card); width: 100%; max-width: 800px; padding: 15px; border-radius: 16px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .painel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .user-name { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px;}
+        .online-counter { font-size: 0.75rem; color: var(--success); display: flex; align-items: center; gap: 5px; background: rgba(16,185,129,0.1); padding: 5px 10px; border-radius: 20px; border: 1px solid rgba(16,185,129,0.2); font-weight: bold;}
+        .dot { height: 6px; width: 6px; background-color: var(--success); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite; }
+        
+        .painel-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .stat-box { background: rgba(0,0,0,0.2); padding: 8px 4px; border-radius: 10px; border: 1px solid var(--border); text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center;}
+        .stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 4px; text-align: center;}
+        .stat-value { font-size: 1rem; font-weight: 900; }
+        .val-pontos { color: var(--warning); }
+        .val-saldo { color: var(--success); }
+        .val-rank { color: var(--primary); }
+        .val-acertos { color: #fff; }
+
+        /* ================= TELAS E CADASTRO ================= */
+        .screen { width: 100%; max-width: 800px; display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card-menu { background: var(--bg-card); padding: 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        
+        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
+        .input-jogo, .select-jogo { width: 100%; padding: 14px; font-size: 1rem; border-radius: 8px; border: 2px solid var(--border); background-color: rgba(0,0,0,0.3); color: #fff; outline: none; transition: border 0.3s; }
+        .input-jogo:focus, .select-jogo:focus { border-color: var(--primary); background-color: rgba(0,0,0,0.5); }
+        
+        /* Temas & Arenas */
+        .temas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; margin-bottom: 25px; }
+        .tema-btn { padding: 10px 5px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; color: var(--text-muted); font-weight: bold; cursor: pointer; font-size: 0.8rem;}
+        .tema-btn.ativo { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+
+        .arena-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;}
+        .arena-item { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 10px; text-align: left;}
+        .arena-header { display: flex; justify-content: space-between; align-items: center;}
+        .arena-title { font-size: 1.1rem; font-weight: 900; color: #fff;}
+        .arena-prize { font-size: 0.8rem; background: rgba(16,185,129,0.1); color: var(--success); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(16,185,129,0.3);}
+        .arena-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;}
+
+        /* ================= HUD ARENA DE JOGO ================= */
+        .game-area { background: var(--bg-card); border-radius: 16px; padding: 15px; width: 100%; border: 1px solid var(--border); margin-bottom: 15px; }
+        .hud-arena { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 15px; text-align: center; }
+        .hud-item { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .hud-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; }
+        .hud-val { font-size: 0.9rem; font-weight: 900; color: #fff; }
+        .hud-crono { font-size: 1.8rem; color: var(--warning); text-shadow: 0 0 10px rgba(250, 204, 21, 0.5); }
+        .hud-tema { color: var(--primary); }
+        .hud-online { color: var(--success); }
+
+        /* Loja de Dicas */
+        .loja-dicas { display: flex; gap: 5px; margin-bottom: 20px; }
+        .btn-dica { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text-muted); padding: 8px 4px; border-radius: 8px; font-size: 0.7rem; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px;}
+        .btn-dica span { color: var(--warning); font-size: 0.8rem;}
+        .btn-dica:hover { border-color: var(--warning); background: rgba(250, 204, 21, 0.1); color: #fff;}
+
+        /* Elementos dos Jogos */
+        .dica-texto { font-size: 1.1rem; color: #fff; margin: 10px 0; text-align: center; font-weight: bold; min-height: 30px; }
+        .palavra-oculta { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; margin-bottom: 20px; }
+        .letra-box { width: 30px; height: 40px; background: rgba(0,0,0,0.3); border: 2px solid var(--border); border-radius: 8px; font-size: 1.2rem; font-weight: 900; display: flex; justify-content: center; align-items: center; color: transparent; text-transform: uppercase;}
+        .letra-box.revelada { background: var(--primary); color: #fff; border-color: #0ea5e9; box-shadow: 0 0 10px rgba(56,189,248,0.5);}
+        .caca-palavras-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; margin-bottom: 15px; }
+        .celula-letra { aspect-ratio: 1; background: var(--bg-card); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 0.9rem; border-radius: 4px; color: var(--text-muted); cursor: pointer; border: 1px solid var(--border);}
+        .celula-letra.achada { background: var(--success); color: #fff; border-color: #059669; }
+        .lista-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 15px;}
+        .tag-item { background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 20px; border: 1px solid var(--border); font-size: 0.7rem; color: var(--text-muted); font-weight: bold;}
+        .tag-item.encontrada { background: rgba(16,185,129,0.2); color: var(--success); border-color: var(--success); }
+
+        /* ================= MODAIS & RANKING 15 ================= */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.95); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 15px; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--bg-card); padding: 25px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); max-height: 90vh; display: flex; flex-direction: column;}
+        .ad-video-box { width: 100%; min-height: 100px; background: rgba(0,0,0,0.3); margin: 15px 0; display: flex; align-items: center; justify-content: center; color: var(--text-muted); border-radius: 12px; border: 1px dashed var(--border); font-weight: bold; overflow: hidden; padding: 10px;}
+        
+        .ranking-container { flex-grow: 1; overflow-y: auto; margin-bottom: 15px; text-align: left; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); padding: 10px;}
+        .rank-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem;}
+        .rank-row.is-me { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--primary); border-radius: 8px; font-weight: bold;}
+        .rank-pos { width: 30px; color: var(--text-muted); font-weight: bold;}
+        .rank-name { flex-grow: 1; color: #fff;}
+        .rank-pts { color: var(--success); font-weight: bold;}
+
+        /* Admin Panel specific */
+        .admin-wallet { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: left;}
+        .wallet-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; align-items: center;}
+    </style>
+</head>
+<body>
+
+<div class="banner-destaque">🌟 Acumule pontos e ganhe R$ 100! Comece Grátis 🌟</div>
+
+<div class="ad-container ad-top">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-1650867304804210"
+         data-ad-slot="1000582517"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+
+<div id="painel-usuario" class="painel-usuario hidden">
+    <div class="painel-header">
+        <div class="user-name">👤 <span id="display-user">Jogador</span></div>
+        <div class="online-counter"><span class="dot"></span> <span id="contador-online">546</span> Online</div>
+    </div>
+    <div class="painel-stats">
+        <div class="stat-box">
+            <span class="stat-label">Pontos Acum.</span>
+            <span class="stat-value val-pontos" id="display-pontos">0</span>
+        </div>
+        <div class="stat-box" onclick="abrirCarteira()" style="border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.05);">
+            <span class="stat-label">Carteira (Saque)</span>
+            <span class="stat-value val-saldo" id="display-saldo">R$ 0,00</span>
+        </div>
+        <div class="stat-box" onclick="abrirRanking15()" style="border-color: rgba(56,189,248,0.3); background: rgba(56,189,248,0.05);">
+            <span class="stat-label">Posição Rank</span>
+            <span class="stat-value val-rank" id="display-rank">12º</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">Acertos totais</span>
+            <span class="stat-value val-acertos" id="display-acertos">0</span>
+        </div>
+    </div>
+</div>
+
+<div id="view-login" class="screen">
+    <div class="card-menu">
+        <h1 style="color: var(--primary); font-size: 2rem; margin-bottom: 5px; font-weight: 900;">RendaPlay Pro</h1>
+        <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem;">Crie sua conta para disputar prêmios e sacar via PIX.</p>
+        
+        <form id="form-cadastro" onsubmit="fazerCadastroLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Nome Completo</label>
+                <input type="text" id="cad-nome" class="input-jogo" placeholder="Ex: João da Silva" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Apelido (Para o Ranking)</label>
+                <input type="text" id="cad-apelido" class="input-jogo" placeholder="Ex: JoaoGamer" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">E-mail</label>
+                <input type="email" id="cad-email" class="input-jogo" placeholder="Ex: joao@email.com" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Telefone (WhatsApp)</label>
+                <input type="tel" id="cad-telefone" class="input-jogo" placeholder="(11) 99999-9999" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">CPF (Para segurança)</label>
+                <input type="text" id="cad-cpf" class="input-jogo" placeholder="Apenas números" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">CADASTRAR E ENTRAR</button>
+        </form>
+    </div>
+</div>
+
+<div id="view-lobby" class="screen hidden">
+    <div class="card-menu">
+        <h2 style="font-size: 1rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; text-align: left;">1º Escolha o Tema</h2>
+        <div class="temas-grid" id="container-temas"></div>
+
+        <h2 style="font-size: 1rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px; margin-top: 10px; text-align: left;">2º Escolha a Arena</h2>
+        
+        <div class="arena-list">
+            <div class="arena-item">
+                <div class="arena-header">
+                    <span class="arena-title">⚡ Arena 1: Quem sou?</span>
+                    <span class="arena-prize">1º Lugar: R$ 1.000</span>
+                </div>
+                <p class="arena-desc">Charadas em 60s. 1 palavra = 100 pts. 10 palavras = 1.000 pts.</p>
+                <button class="btn btn-primary" onclick="iniciarFluxoArena(1)">Jogar Arena 1</button>
+            </div>
+            
+            <div class="arena-item">
+                <div class="arena-header">
+                    <span class="arena-title">🧩 Arena 2: Palavra Secreta</span>
+                    <span class="arena-prize">Prêmio: R$ 3.000</span>
+                </div>
+                <p class="arena-desc">Descubra 1 palavra oculta em 60s = 1.000 pts.</p>
+                <button class="btn btn-success" onclick="iniciarFluxoArena(2)">Jogar Arena 2</button>
+            </div>
+
+            <div class="arena-item">
+                <div class="arena-header">
+                    <span class="arena-title">⌨️ Arena 3: Qual a Palavra?</span>
+                    <span class="arena-prize">Prêmio: R$ 500</span>
+                </div>
+                <p class="arena-desc">Digite 10 palavras em 60s. 1 palavra = 100 pts. 10 palavras = 1.000 pts.</p>
+                <button class="btn btn-warning" onclick="iniciarFluxoArena(3)">Jogar Arena 3</button>
+            </div>
+
+            <div class="arena-item">
+                <div class="arena-header">
+                    <span class="arena-title">🔎 Arena 4: Caça Palavras</span>
+                    <span class="arena-prize">Prêmio: R$ 500</span>
+                </div>
+                <p class="arena-desc">Encontre 10 palavras no quadro em 60s. 100 pts cada.</p>
+                <button class="btn btn-danger" onclick="iniciarFluxoArena(4)">Jogar Arena 4</button>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-dark" style="color: var(--danger); border-color: rgba(244,63,94,0.3);" onclick="fazerLogout()">Sair da Conta</button>
+        </div>
+    </div>
+</div>
+
+<div id="view-arena" class="screen hidden">
+    <main class="game-area">
+        
+        <div class="hud-arena">
+            <div class="hud-item"><span class="hud-label">Tema</span><span class="hud-val hud-tema" id="hud-tema">Arte</span></div>
+            <div class="hud-item"><span class="hud-label">Cronômetro</span><span class="hud-val hud-crono" id="arena-cronometro">60</span></div>
+            <div class="hud-item"><span class="hud-label">Pontos</span><span class="hud-val val-pontos" id="hud-pontos">0</span></div>
+            <div class="hud-item"><span class="hud-label">Acertos</span><span class="hud-val" id="hud-acertos">0</span></div>
+            <div class="hud-item"><span class="hud-label">Pos. Rank</span><span class="hud-val val-rank" id="hud-rank">1º</span></div>
+            <div class="hud-item"><span class="hud-label">Online</span><span class="hud-val hud-online" id="hud-online">546</span></div>
+        </div>
+        
+        <div class="loja-dicas">
+            <button class="btn-dica" onclick="comprarDica(1, 0.50)">Dica 1 <span>R$ 0,50</span></button>
+            <button class="btn-dica" onclick="comprarDica(2, 1.50)">Dica 2 <span>R$ 1,50</span></button>
+            <button class="btn-dica" onclick="comprarDica(3, 2.00)">Dica 3 <span>R$ 2,00</span></button>
+        </div>
+
+        <div id="arena-conteudo" style="width:100%; min-height: 120px; display: flex; flex-direction: column; justify-content: center;"></div>
+
+        <form style="display: flex; gap: 10px; width: 100%; margin-top: 15px;" id="form-resposta">
+            <input type="text" id="resposta-input" class="input-jogo" style="margin:0; flex: 1;" placeholder="Sua Resposta..." autocomplete="off" disabled required>
+            <button type="submit" class="btn btn-primary" style="margin:0; width: auto; padding: 0 25px;" id="btn-enviar" disabled>OK</button>
+        </form>
+    </main>
+    <button class="btn btn-dark" onclick="voltarAoLobby()">Desistir e Voltar</button>
+</div>
+
+<div id="modal-pre-jogo" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h2 style="color: var(--warning); margin-bottom: 5px; font-weight: 900;">MODO GRATUITO</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Assista ao anúncio (30s) para ganhar pontos na rodada valendo dinheiro.</p>
+        
+        <div class="ad-video-box">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-1650867304804210"
+                 data-ad-slot="1000582517"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>
+                 (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+        
+        <div style="font-size: 1.1rem; color: #fff; margin-bottom: 20px;">Aguarde <span id="contador-pre-jogo" style="color: var(--warning); font-size: 1.5rem; font-weight: 900;">30</span>s</div>
+        <button id="btn-entrar-arena" class="btn btn-success hidden">INICIAR RODADA</button>
+    </div>
+</div>
+
+<div id="modal-carteira" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h2 style="color: var(--success); margin-bottom: 20px; font-weight: 900;">CARTEIRA DE SAQUE</h2>
+        <div style="background: rgba(0,0,0,0.3); padding: 25px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px;">
+            <p style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; font-weight: bold;">Dinheiro Disponível</p>
+            <h1 style="color: var(--success); font-size: 3rem; margin: 5px 0;" id="modal-valor-saldo">R$ 0,00</h1>
+            <p style="color: var(--warning); font-size:0.8rem;" id="aviso-saque">Saque a partir de R$ 100,00 (20.000 pts)</p>
+        </div>
+        
+        <div class="form-group" style="text-align: left; margin-bottom: 20px;">
+            <label class="form-label">Escolha a Chave PIX cadastrada:</label>
+            <select id="select-chave-pix" class="select-jogo">
+                <option value="cpf">CPF</option>
+                <option value="telefone">Telefone (Celular)</option>
+                <option value="email">E-mail</option>
+            </select>
+        </div>
+
+        <button class="btn btn-success" id="btn-sacar-pix" onclick="solicitarSaque()" disabled>SACAR VIA PIX</button>
+        <button class="btn btn-dark" style="margin-top: 10px;" onclick="document.getElementById('modal-carteira').classList.add('hidden')">FECHAR</button>
+    </div>
+</div>
+
+<div id="modal-ranking" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h2 style="color: var(--primary); margin-bottom: 5px; font-weight: 900;">TOP 15 RANKING</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Disputa ao vivo nas Arenas.</p>
+        
+        <div class="ranking-container" id="lista-top-15">
+            </div>
+        
+        <button class="btn btn-dark" onclick="document.getElementById('modal-ranking').classList.add('hidden')">FECHAR</button>
+    </div>
+</div>
+
+<div class="ad-container ad-footer">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-1650867304804210"
+         data-ad-slot="8687500847"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+
+<script>
+    // ================= BANCO DE DADOS (Simulação) =================
+    const dbTemas = {
+        "Arte": [{ word: "PICASSO", hints: ["Pintor espanhol", "Criou o Cubismo", "Pintou Guernica"] }, { word: "MUSEU", hints: ["Guarda a história", "Local de exposição", "O Louvre é um"] }, { word: "AQUARELA", hints: ["Técnica de pintura", "Usa muita água", "Música famosa"] }, { word: "ESCULTURA", hints: ["Arte em 3D", "Feita de mármore", "O Pensador"] }, { word: "CINEMA", hints: ["Sétima Arte", "Exibe filmes", "Hollywood"] }],
+        "Bíblico": [{ word: "GENESIS", hints: ["Primeiro livro", "Significa Origem", "Criação do mundo"] }, { word: "MOISES", hints: ["Abriu o mar", "10 Mandamentos", "Príncipe do Egito"] }, { word: "GOLIAS", hints: ["Gigante", "Filisteu", "Derrotado por Davi"] }, { word: "ARCA", hints: ["Barco gigante", "Madeira", "Noé construiu"] }, { word: "MANA", hints: ["Alimento", "Caiu do céu", "Sustento no deserto"] }],
+        "Ciência": [{ word: "ATOMO", hints: ["Partícula base", "Prótons e nêutrons", "Núcleo"] }, { word: "GRAVIDADE", hints: ["Força de atração", "Puxa para o centro", "Maçã de Newton"] }, { word: "DNA", hints: ["Código genético", "Fita dupla", "Hereditariedade"] }, { word: "BACTERIA", hints: ["Ser microscópico", "Unicelular", "Pode causar doenças"] }, { word: "TELESCOPIO", hints: ["Instrumento óptico", "Lentes grandes", "Observa o espaço"] }],
+        "Tecnologia": [{ word: "INTERNET", hints: ["Rede mundial", "Conecta computadores", "Web"] }, { word: "TECLADO", hints: ["Periférico de entrada", "Letras e números", "Padrão QWERTY"] }, { word: "ALGORITMO", hints: ["Passo a passo", "Lógica", "Código de programação"] }, { word: "PROCESSADOR", hints: ["Hardware", "Cérebro do PC", "Chip"] }, { word: "BLUETOOTH", hints: ["Conexão sem fio", "Curto alcance", "Ícone azul"] }],
+        "Geografia": [{ word: "AMAZONAS", hints: ["Maior rio em volume", "Norte do Brasil", "Corta a floresta"] }, { word: "SAARA", hints: ["Região árida", "Norte da África", "Maior deserto quente"] }, { word: "EVEREST", hints: ["Pico congelado", "Cordilheira do Himalaia", "Ponto mais alto"] }, { word: "VULCAO", hints: ["Estrutura geológica", "Erupção", "Magma e lava"] }, { word: "CONTINENTE", hints: ["Massa de terra", "São 6 no mundo", "América"] }],
+        "Charadas": [{ word: "VENTO", hints: ["Passa pela porta sem abrir", "Não tem corpo", "Balança as árvores"] }, { word: "SEGREDO", hints: ["Se não conta, existe", "Se contar, deixa de ser", "Sete chaves"] }, { word: "SOMBRA", hints: ["Cresce no sol", "Desaparece no escuro", "Te segue"] }, { word: "FUTURO", hints: ["Sempre à frente", "Nunca chega", "O amanhã"] }, { word: "RELOGIO", hints: ["Tem mãos e não bate palma", "Tem rosto e não sorri", "Marca o tempo"] }],
+        "Futebol": [{ word: "IMPEDIMENTO", hints: ["Regra", "Frente da linha de defesa", "Anula o ataque"] }, { word: "ESCANTEIO", hints: ["Bola sai no fundo", "Cobrança com pé", "Fica no canto"] }, { word: "ARTILHEIRO", hints: ["Jogador destaque", "Geralmente camisa 9", "Faz muitos gols"] }, { word: "PENALTI", hints: ["Infração na área", "Marca da cal", "Tiro de 11 metros"] }, { word: "ZAGUEIRO", hints: ["Posição", "Fica na defesa", "Protege o goleiro"] }],
+        "Animais": [{ word: "CACHORRO", hints: ["Mamífero doméstico", "Late", "Melhor amigo do homem"] }, { word: "GATO", hints: ["Felino", "Mia", "Gosta de caçar rato"] }, { word: "ELEFANTE", hints: ["Mamífero grande", "Tem tromba", "Excelente memória"] }, { word: "LEAO", hints: ["Felino selvagem", "Tem juba", "Rei da selva"] }, { word: "GIRAFA", hints: ["Mamífero africano", "Pescoço muito longo", "Come folhas de árvores"] }]
+    };
+
+    const nomesTemas = Object.keys(dbTemas);
+    let temaSelecionado = "Arte";
+    let arenaAtual = 0;
+    
+    // Status User
+    let dadosUsuario = null;
+    let nomeJogador = "";
+    let globalPontos = 0; 
+    let globalSaldo = 0.00;
+    let globalAcertos = 0;
+    let rankGeral = [];
+
+    // Status Engine
+    let timerJogo; 
+    let tempoRestante = 0; 
+    let jogoAtivo = false;
+    let rodadaAtual = 1;
+    let maxRodadas = 1;
+    let palavrasSorteadas = [];
+    let palavraAtualObj = null; 
+    let palavrasCaca = []; 
+    let cacaEncontradas = [];
+    let acertosNaRodada = 0;
+
+    const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    window.onload = () => {
+        let saved = localStorage.getItem("rp_user_v6");
+        if(saved) {
+            dadosUsuario = JSON.parse(saved);
+            document.getElementById("cad-nome").value = dadosUsuario.nome;
+            document.getElementById("cad-apelido").value = dadosUsuario.apelido;
+            document.getElementById("cad-email").value = dadosUsuario.email;
+            document.getElementById("cad-telefone").value = dadosUsuario.telefone;
+            document.getElementById("cad-cpf").value = dadosUsuario.cpf;
+            iniciarSessaoLocal();
+        }
+        renderizarBotoesTemas();
+        iniciarSimuladorOnline();
+    };
+
+    // ================= SISTEMA DE CADASTRO E LOGIN =================
+    function fazerCadastroLogin(e) {
+        e.preventDefault();
+        const nome = document.getElementById("cad-nome").value.trim();
+        const apelido = document.getElementById("cad-apelido").value.trim();
+        const email = document.getElementById("cad-email").value.trim();
+        const telefone = document.getElementById("cad-telefone").value.trim();
+        const cpf = document.getElementById("cad-cpf").value.trim();
+
+        if(!nome || !apelido || !email || !telefone || !cpf) return alert("Preencha todos os campos do cadastro!");
+
+        dadosUsuario = { nome, apelido, email, telefone, cpf };
+        localStorage.setItem("rp_user_v6", JSON.stringify(dadosUsuario));
+
+        iniciarSessaoLocal();
+    }
+
+    function iniciarSessaoLocal() {
+        nomeJogador = dadosUsuario.apelido; 
+        document.getElementById("display-user").innerText = nomeJogador;
+        
+        // Puxa histórico pelo CPF do usuário logado
+        globalPontos = parseInt(localStorage.getItem(`rp_pts_${dadosUsuario.cpf}`)) || 0;
+        globalAcertos = parseInt(localStorage.getItem(`rp_acertos_${dadosUsuario.cpf}`)) || 0;
+        
+        atualizarPlacaresGlobais();
+        gerarRankingBase();
+        
+        document.getElementById("painel-usuario").classList.remove('hidden');
+        document.getElementById("view-login").classList.add('hidden');
+        document.getElementById("view-lobby").classList.remove('hidden');
+    }
+
+    function fazerLogout() {
+        localStorage.removeItem("rp_user_v6"); 
+        document.getElementById("painel-usuario").classList.add('hidden');
+        document.getElementById("view-lobby").classList.add('hidden');
+        document.getElementById("view-arena").classList.add('hidden');
+        document.getElementById("form-cadastro").reset();
+        document.getElementById("view-login").classList.remove('hidden');
+    }
+
+    function renderizarBotoesTemas() {
+        const container = document.getElementById("container-temas");
+        container.innerHTML = "";
+        nomesTemas.forEach(tema => {
+            let btn = document.createElement("button");
+            btn.className = `tema-btn ${tema === temaSelecionado ? 'ativo' : ''}`;
+            btn.innerText = tema;
+            btn.onclick = () => { temaSelecionado = tema; renderizarBotoesTemas(); };
+            container.appendChild(btn);
+        });
+    }
+
+    // ================= FINANÇAS, ADMIN E CARTEIRA =================
+    function registrarAcerto() {
+        // Regra de Ouro: Acerte 1 palavra = 100 pontos
+        globalPontos += 100;
+        globalAcertos += 1;
+        acertosNaRodada += 1;
+        atualizarPlacaresGlobais();
+    }
+
+    function atualizarPlacaresGlobais() {
+        globalSaldo = globalPontos * 0.005; // 1000 pts = R$ 5
+        
+        // Atualiza Painel Principal
+        document.getElementById("display-pontos").innerText = globalPontos;
+        document.getElementById("display-saldo").innerText = formatarMoeda(globalSaldo);
+        document.getElementById("display-acertos").innerText = globalAcertos;
+
+        // Atualiza HUD da Arena
+        document.getElementById("hud-pontos").innerText = globalPontos;
+        document.getElementById("hud-acertos").innerText = globalAcertos;
+        
+        // Salva DB
+        if(dadosUsuario) {
+            localStorage.setItem(`rp_pts_${dadosUsuario.cpf}`, globalPontos);
+            localStorage.setItem(`rp_acertos_${dadosUsuario.cpf}`, globalAcertos);
+        }
+        atualizaMeuRank();
+    }
+
+    function adicionarReceitaAdmin(valorReal) {
+        let revAdmin = parseFloat(localStorage.getItem("rp_admin_rev_v6")) || 0;
+        revAdmin += valorReal;
+        localStorage.setItem("rp_admin_rev_v6", revAdmin);
+    }
+
+    function abrirCarteira() { 
+        document.getElementById('modal-valor-saldo').innerText = formatarMoeda(globalSaldo);
+        const btnSacar = document.getElementById("btn-sacar-pix");
+        const aviso = document.getElementById("aviso-saque");
+        if(globalSaldo >= 100) {
+            btnSacar.disabled = false;
+            aviso.innerText = "🎉 SALDO LIBERADO PARA SAQUE!";
+            aviso.style.color = "var(--success)";
+        } else {
+            btnSacar.disabled = true;
+            aviso.innerText = `Faltam: ${formatarMoeda(100 - globalSaldo)} para sacar.`;
+            aviso.style.color = "var(--warning)";
+        }
+        document.getElementById('modal-carteira').classList.remove('hidden'); 
+    }
+
+    function solicitarSaque() {
+        if(globalSaldo >= 100) {
+            const selectPix = document.getElementById("select-chave-pix").value;
+            let chaveEscolhida = dadosUsuario[selectPix]; 
+            
+            globalPontos -= 20000; // Deduz os 20k pts (R$ 100)
+            atualizarPlacaresGlobais();
+            
+            // Envia para a Fila do Admin
+            let filaSaques = JSON.parse(localStorage.getItem("rp_fila_saques_v6")) || [];
+            filaSaques.push({
+                jogador: dadosUsuario.nome,
+                chavePix: chaveEscolhida,
+                tipoChave: selectPix,
+                valor: 100.00,
+                data: new Date().toLocaleString(),
+                status: "Pendente"
+            });
+            localStorage.setItem("rp_fila_saques_v6", JSON.stringify(filaSaques));
+
+            alert(`✅ PIX Solicitado!\nA chave enviada foi a sua chave de ${selectPix.toUpperCase()}: ${chaveEscolhida}.\nO valor sairá da Fila de Pagamentos em breve.`);
+            document.getElementById('modal-carteira').classList.add('hidden');
+        }
+    }
+
+    function comprarDica(nivel, preco) {
+        if(!jogoAtivo) return;
+        if(globalSaldo >= preco) {
+            let custoPontos = preco / 0.005;
+            globalPontos -= custoPontos;
+            atualizarPlacaresGlobais();
+            adicionarReceitaAdmin(preco);
+
+            let dicasEl = document.getElementById("dica-texto-container");
+            if(dicasEl && palavraAtualObj) {
+                let htmlAtual = dicasEl.innerHTML;
+                if(nivel === 1) dicasEl.innerHTML = htmlAtual.replace(palavraAtualObj.hints[0], `<span style="color:var(--success)">${palavraAtualObj.hints[0]}</span>`);
+                if(nivel === 2) dicasEl.innerHTML += `<br><span style="color:var(--warning)">Dica 2: ${palavraAtualObj.hints[1]}</span>`;
+                if(nivel === 3) dicasEl.innerHTML += `<br><span style="color:var(--primary)">Dica 3: ${palavraAtualObj.hints[2]}</span>`;
+            } else if (arenaAtual === 4) {
+                alert(`Dica ${nivel} ativada! A palavra '${palavrasCaca[nivel-1] || palavrasCaca[0]}' está na tela.`);
+            }
+        } else {
+            alert("Saldo insuficiente. Jogue o Modo Gratuito assistindo aos anúncios.");
+        }
+    }
+
+    // ================= FLUXO DAS ARENAS =================
+    function iniciarFluxoArena(tipoArena) {
+        arenaAtual = tipoArena;
+        document.getElementById("view-lobby").classList.add("hidden");
+        document.getElementById("modal-pre-jogo").classList.remove("hidden");
+        document.getElementById("btn-entrar-arena").classList.add("hidden");
+        
+        adicionarReceitaAdmin(0.05); 
+        
+        let tempoAd = 30; 
+        document.getElementById("contador-pre-jogo").innerText = tempoAd;
+        
+        let intAd = setInterval(() => {
+            tempoAd--; 
+            document.getElementById("contador-pre-jogo").innerText = tempoAd;
+            if(tempoAd <= 0) {
+                clearInterval(intAd); 
+                document.getElementById("btn-entrar-arena").classList.remove("hidden");
+            }
+        }, 1000);
+    }
+
+    document.getElementById("btn-entrar-arena").onclick = () => {
+        document.getElementById("modal-pre-jogo").classList.add("hidden");
+        montarArena();
+    };
+
+    function voltarAoLobby() {
+        jogoAtivo = false; clearInterval(timerJogo);
+        document.getElementById("view-arena").classList.add("hidden");
+        document.getElementById("view-lobby").classList.remove("hidden");
+    }
+
+    function montarArena() {
+        document.getElementById("view-arena").classList.remove("hidden");
+        document.getElementById("hud-tema").innerText = temaSelecionado;
+        document.getElementById("resposta-input").disabled = false;
+        document.getElementById("btn-enviar").disabled = false;
+        document.getElementById("resposta-input").value = "";
+        document.getElementById("resposta-input").focus();
+        
+        jogoAtivo = true;
+        tempoRestante = 60;
+        acertosNaRodada = 0;
+        
+        let listaTemaBase = dbTemas[temaSelecionado];
+        let listaTema = [...listaTemaBase, ...listaTemaBase, ...listaTemaBase, ...listaTemaBase, ...listaTemaBase];
+        
+        if (arenaAtual === 1 || arenaAtual === 3) {
+            maxRodadas = 10; rodadaAtual = 1;
+            palavrasSorteadas = listaTema.sort(() => 0.5 - Math.random()).slice(0, 10);
+            carregarSubRodada();
+        } 
+        else if (arenaAtual === 2) {
+            palavraAtualObj = listaTema[Math.floor(Math.random() * listaTema.length)];
+            let htmlBoxes = '<div class="palavra-oculta" id="container-letras">';
+            for(let i=0; i<palavraAtualObj.word.length; i++) htmlBoxes += `<div class="letra-box">${palavraAtualObj.word[i]}</div>`;
+            htmlBoxes += `</div><div class="dica-texto" id="dica-texto-container">Dica: ${palavraAtualObj.hints[0]}</div>`;
+            document.getElementById("arena-conteudo").innerHTML = htmlBoxes;
+        } 
+        else if (arenaAtual === 4) {
+            let selecaoCaca = listaTema.sort(() => 0.5 - Math.random()).slice(0, 10);
+            palavrasCaca = selecaoCaca.map(p => p.word); cacaEncontradas = [];
+            
+            let grid = Array(100).fill(''); const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            palavrasCaca.forEach((palavra, wIndex) => {
+                let pos = (wIndex * 10) + Math.floor(Math.random() * (10 - palavra.length));
+                if (pos < 100) for(let i=0; i<palavra.length; i++) grid[pos + i] = palavra[i];
+            });
+            for(let i=0; i<100; i++) if(grid[i] === '') grid[i] = letras[Math.floor(Math.random()*26)];
+            
+            let htmlGrid = '<div class="caca-palavras-grid">';
+            grid.forEach((letra) => { htmlGrid += `<div class="celula-letra">${letra}</div>`; });
+            htmlGrid += '</div><div class="lista-tags">';
+            palavrasCaca.forEach(p => { htmlGrid += `<span class="tag-item" id="tag-${p}">${p.replace(/./g, '_')}</span>`; });
+            htmlGrid += '</div>';
+            document.getElementById("arena-conteudo").innerHTML = htmlGrid;
+        }
+
+        atualizaCrono();
+        timerJogo = setInterval(() => {
+            if(!jogoAtivo) return; tempoRestante--; atualizaCrono();
+            if(tempoRestante <= 0) encerrarPartida(false);
+        }, 1000);
+    }
+
+    function carregarSubRodada() {
+        palavraAtualObj = palavrasSorteadas[rodadaAtual - 1];
+        let conteudo = `<div style="color:var(--success); font-weight:bold; margin-bottom:10px;">Rodada ${rodadaAtual}/10</div>`;
+        conteudo += `<div class="dica-texto" id="dica-texto-container">${palavraAtualObj.hints[0]}</div>`;
+        document.getElementById("arena-conteudo").innerHTML = conteudo;
+    }
+
+    function atualizaCrono() { document.getElementById("arena-cronometro").innerText = tempoRestante < 10 ? '0'+tempoRestante : tempoRestante; }
+
+    document.getElementById("form-resposta").addEventListener("submit", (e) => {
+        e.preventDefault(); if(!jogoAtivo) return;
+        let inputEl = document.getElementById("resposta-input"); let tentativa = inputEl.value.trim().toUpperCase(); inputEl.value = "";
+
+        if (arenaAtual === 1 || arenaAtual === 3) {
+            if(tentativa === palavraAtualObj.word) {
+                registrarAcerto(); 
+                if(rodadaAtual === maxRodadas) encerrarPartida(true);
+                else { rodadaAtual++; carregarSubRodada(); }
+            } else { erroInput(inputEl); }
+        } 
+        else if (arenaAtual === 2) {
+            if(tentativa === palavraAtualObj.word) {
+                document.querySelectorAll('.letra-box').forEach(b => b.classList.add('revelada'));
+                globalPontos += 900; // Totalizando 1000 com o registrarAcerto
+                registrarAcerto();
+                encerrarPartida(true);
+            } else { erroInput(inputEl); }
+        } 
+        else if (arenaAtual === 4) {
+            if(palavrasCaca.includes(tentativa) && !cacaEncontradas.includes(tentativa)) {
+                cacaEncontradas.push(tentativa);
+                registrarAcerto(); 
+                document.getElementById(`tag-${tentativa}`).innerText = tentativa;
+                document.getElementById(`tag-${tentativa}`).classList.add("encontrada");
+                document.querySelectorAll('.celula-letra').forEach(cel => { if(tentativa.includes(cel.innerText)) cel.classList.add("achada"); });
+                if(cacaEncontradas.length === palavrasCaca.length) encerrarPartida(true);
+            } else { erroInput(inputEl); }
+        }
+    });
+
+    function erroInput(el) { el.style.borderColor = 'var(--danger)'; setTimeout(() => el.style.borderColor = 'var(--border)', 400); }
+
+    function encerrarPartida(venceu) {
+        jogoAtivo = false; clearInterval(timerJogo);
+        document.getElementById("resposta-input").disabled = true; document.getElementById("btn-enviar").disabled = true;
+
+        if(venceu) {
+            document.getElementById("arena-conteudo").innerHTML = `<div style="text-align:center;"><h2 style='font-size:2rem; color:var(--success)'>DESAFIO CONCLUÍDO!</h2><p style="color:var(--warning);">Ganhou os prêmios da Arena!</p></div>`;
+            setTimeout(() => voltarAoLobby(), 3000);
+        } else {
+            let msg = `<h2 style='font-size:2rem; color:var(--danger)'>FIM DE JOGO</h2>`;
+            if(arenaAtual !== 4) msg += `<p style="color:var(--warning);">A resposta era: ${palavraAtualObj.word}</p>`;
+            document.getElementById("arena-conteudo").innerHTML = `<div style="text-align:center;">${msg}</div>`;
+            setTimeout(() => voltarAoLobby(), 3500);
+        }
+    }
+
+    // ================= RANKING TOP 15 E CONTADORES =================
+    function iniciarSimuladorOnline() {
+        let contador = 546;
+        setInterval(() => {
+            contador += Math.floor(Math.random() * 5) - 2;
+            if(contador < 500) contador = 500;
+            
+            document.getElementById("contador-online").innerText = contador;
+            if(document.getElementById("hud-online")) document.getElementById("hud-online").innerText = contador;
+            
+            if(Math.random() > 0.6) moverBotsNoRank();
+        }, 5000);
+    }
+
+    function gerarRankingBase() {
+        const nomesBase = ["Lucas_Pro", "Maria_Win", "Carlos123", "Ana_Gamer", "Pedro_BR", "Ju_Ninja", "Beto_Cash", "Suh_99", "GamerX", "Vini_Lord", "LeticiaA", "Rafa_Z", "Dani_Top", "Leo_King", "Mestre_Loto"];
+        rankGeral = nomesBase.map(n => ({ nome: n, pontos: Math.floor(Math.random()*15000)+5000, isMe: false }));
+        rankGeral.push({ nome: nomeJogador, pontos: globalPontos, isMe: true });
+        atualizaMeuRank();
+    }
+
+    function atualizaMeuRank() {
+        let eu = rankGeral.find(r => r.isMe);
+        if(eu) {
+            eu.nome = nomeJogador; 
+            eu.pontos = globalPontos;
+        }
+        rankGeral.sort((a,b) => b.pontos - a.pontos);
+        
+        let minhaPos = rankGeral.findIndex(r => r.isMe) + 1;
+        document.getElementById("display-rank").innerText = `${minhaPos}º`;
+        if(document.getElementById("hud-rank")) document.getElementById("hud-rank").innerText = `${minhaPos}º`;
+    }
+
+    function moverBotsNoRank() {
+        rankGeral.forEach(b => { if(!b.isMe && Math.random() > 0.5) b.pontos += 100; }); // +100 aos bots
+        atualizaMeuRank();
+    }
+
+    function abrirRanking15() {
+        const container = document.getElementById("lista-top-15");
+        container.innerHTML = "";
+        
+        let top15 = rankGeral.slice(0, 15);
+        let estouNoTop = top15.find(r => r.isMe);
+        if(!estouNoTop) {
+            top15.pop(); 
+            top15.push(rankGeral.find(r => r.isMe));
+        }
+
+        top15.forEach((r) => {
+            let realIndex = rankGeral.findIndex(x => x.nome === r.nome) + 1;
+            let div = document.createElement("div");
+            div.className = `rank-row ${r.isMe ? 'is-me' : ''}`;
+            div.innerHTML = `
+                <span class="rank-pos">${realIndex}º</span>
+                <span class="rank-name">${r.nome}</span>
+                <span class="rank-pts">${r.pontos} pts</span>
+            `;
+            container.appendChild(div);
+        });
+
+        document.getElementById('modal-ranking').classList.remove('hidden');
+    }
+</script>
+</body>
+</html>
