@@ -98,7 +98,7 @@
     <main class="main-content">
         <div class="header-top">
             <h2>Visão Geral Financeira</h2>
-            <div class="admin-badge">🔴 Ao Vivo - 546 Online</div>
+            <div class="admin-badge" id="admin-mode">MODO REAL — autenticando</div>
         </div>
 
         <div class="cards-grid">
@@ -124,6 +124,8 @@
             </div>
         </div>
 
+        <div id="api-status" role="status" class="section-box" style="color:var(--warning)">Conectando ao backend…</div>
+
         <div class="section-box">
             <div class="section-title">
                 Fila de Saques (PIX)
@@ -133,7 +135,7 @@
                 <thead>
                     <tr>
                         <th>Jogador</th>
-                        <th>Chave PIX (CPF/Email)</th>
+                        <th>Valor</th>
                         <th>Data/Hora</th>
                         <th>Status</th>
                         <th>Ação</th>
@@ -161,146 +163,109 @@
         </div>
     </main>
 
+    <script src="api.js"></script>
     <script>
-        const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const MODO_DEMO = ArenaApp.mode === "demo";
+        const moeda = n => Number(n || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+        const el = id => document.getElementById(id);
 
-        // Inicialização
-        window.onload = () => {
-            carregarDadosFinanceiros();
-            gerarSaquesFalsos();
-            gerarLogsIniciais();
-            iniciarSimuladorTempoReal();
+        window.onload = async () => {
+            el("admin-mode").textContent = MODO_DEMO ? "DEMONSTRAÇÃO — dados fictícios" : "MODO REAL — acesso administrativo";
+            el("admin-mode").style.color = MODO_DEMO ? "var(--warning)" : "var(--success)";
+            if (MODO_DEMO) return carregarDemo();
+            try {
+                const [dash, fila, transacoes] = await Promise.all([
+                    ArenaApp.request("/admin/dashboard"),
+                    ArenaApp.request("/admin/withdrawals"),
+                    ArenaApp.request("/admin/transactions?limit=20")
+                ]);
+                renderDashboard(dash);
+                renderSaques(fila.items || []);
+                renderTransacoes(transacoes.items || []);
+                el("api-status").textContent = "Dados recebidos do backend autenticado.";
+                el("api-status").style.color = "var(--success)";
+            } catch (_) {
+                renderDashboard({});
+                renderSaques([]);
+                renderTransacoes([]);
+                el("api-status").textContent = "Backend indisponível ou sessão administrativa ausente. Nenhum dado ou ação fictícia foi carregado.";
+            }
         };
 
-        // ================= LÓGICA FINANCEIRA =================
-        function carregarDadosFinanceiros() {
-            // Tenta puxar a receita real que o usuário gerou testando o jogo no outro arquivo
-            let receitaSalva = parseFloat(localStorage.getItem("rp_admin_rev_v5"));
-            
-            // Se for nulo ou zero, coloca um valor simulado bonito para ver o painel funcionando
-            if (!receitaSalva || receitaSalva === 0) {
-                receitaSalva = 12540.50; // Valor inicial simulado
-                localStorage.setItem("rp_admin_rev_v5", receitaSalva);
-            }
-
-            atualizarCards(receitaSalva);
+        function carregarDemo() {
+            el("api-status").textContent = "Demonstração: os valores e saques abaixo são inventados e não representam dinheiro, usuários ou pagamentos reais.";
+            const demoSaques = [
+                { id: "demo-1", nickname: "Lucas_Pro", amount: 100, createdAt: "Exemplo", status: "pending" },
+                { id: "demo-2", nickname: "Maria_Win", amount: 100, createdAt: "Exemplo", status: "pending" },
+                { id: "demo-3", nickname: "GamerX", amount: 100, createdAt: "Exemplo", status: "paid" }
+            ];
+            const demoTransacoes = [
+                { origin: "Demonstração", description: "Transação fictícia", amount: 2, createdAt: "Exemplo" },
+                { origin: "Demonstração", description: "Transação fictícia", amount: 0.05, createdAt: "Exemplo" }
+            ];
+            renderDashboard({ revenueGross: 12540.5, prizeLiability: 5016.2, operatingCosts: 3762.15, netProfit: 3762.15 });
+            renderSaques(demoSaques);
+            renderTransacoes(demoTransacoes);
         }
 
-        function atualizarCards(total) {
-            const premios = total * 0.40;
-            const op = total * 0.30;
-            const lucro = total * 0.30;
-
-            document.getElementById("val-total").innerText = formatarMoeda(total);
-            document.getElementById("val-premios").innerText = formatarMoeda(premios);
-            document.getElementById("val-op").innerText = formatarMoeda(op);
-            document.getElementById("val-lucro").innerText = formatarMoeda(lucro);
+        function renderDashboard(data) {
+            const total = Number(data.revenueGross || 0);
+            el("val-total").textContent = moeda(total);
+            el("val-premios").textContent = moeda(data.prizeLiability);
+            el("val-op").textContent = moeda(data.operatingCosts);
+            el("val-lucro").textContent = moeda(data.netProfit);
         }
 
-        // ================= TABELA DE SAQUES (PIX) =================
-        let saques = [
-            { id: 1, jogador: "Lucas_Pro", chave: "lucas@email.com", data: "Hoje, 14:30", status: "Pendente" },
-            { id: 2, jogador: "Maria_Win", chave: "123.456.789-00", data: "Hoje, 14:15", status: "Pendente" },
-            { id: 3, jogador: "GamerX", chave: "(11) 99999-9999", data: "Hoje, 13:50", status: "Pago" },
-            { id: 4, jogador: "Ju_Ninja", chave: "ju.ninja@pix.com", data: "Hoje, 11:20", status: "Pago" }
-        ];
-
-        function gerarSaquesFalsos() {
-            const tbody = document.getElementById("tabela-saques");
-            tbody.innerHTML = "";
-
-            saques.forEach(saque => {
-                let btn = saque.status === "Pendente" 
-                    ? `<button class="btn-action" onclick="aprovarPix(${saque.id})">Aprovar PIX</button>` 
-                    : `<button class="btn-action" disabled>PIX Enviado</button>`;
-                
-                let badge = saque.status === "Pendente"
-                    ? `<span class="status-badge status-pendente">Aguardando</span>`
-                    : `<span class="status-badge status-pago">Concluído</span>`;
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="font-weight:bold; color:var(--primary);">${saque.jogador}</td>
-                        <td>${saque.chave}</td>
-                        <td style="color:var(--text-muted);">${saque.data}</td>
-                        <td>${badge}</td>
-                        <td>${btn}</td>
-                    </tr>
-                `;
-            });
+        function emptyRow(tbody, message, columns) {
+            const tr = document.createElement("tr"), td = document.createElement("td");
+            td.colSpan = columns; td.textContent = message; tr.appendChild(td); tbody.appendChild(tr);
         }
 
-        function aprovarPix(id) {
-            let saque = saques.find(s => s.id === id);
-            if(saque) {
-                // Deduz 100 reais da receita total (pois saiu da fila de prêmios)
-                let receitaAtual = parseFloat(localStorage.getItem("rp_admin_rev_v5"));
-                // Na vida real, não deduziria da "Receita Bruta", mas abateria do passivo. 
-                // Para o layout visual, vamos apenas alterar o status.
-                
-                saque.status = "Pago";
-                gerarSaquesFalsos();
-                alert(`✅ PIX de R$ 100,00 aprovado com sucesso para ${saque.jogador}!`);
+        function renderSaques(items) {
+            const tbody = el("tabela-saques"); tbody.replaceChildren();
+            if (!items.length) return emptyRow(tbody, "Nenhuma solicitação recebida do servidor.", 5);
+            for (const item of items) {
+                const tr = document.createElement("tr");
+                const name = document.createElement("td"); name.textContent = item.nickname || "Usuário";
+                const amount = document.createElement("td"); amount.textContent = moeda(item.amount);
+                const date = document.createElement("td"); date.textContent = item.createdAt ? new Date(item.createdAt).toLocaleString("pt-BR") : "—";
+                const status = document.createElement("td"); status.textContent = item.status || "—";
+                const action = document.createElement("td");
+                if (item.status === "pending" && !MODO_DEMO) {
+                    const button = document.createElement("button"); button.className = "btn-action"; button.textContent = "Revisar";
+                    button.onclick = () => revisarSaque(item.id, button); action.appendChild(button);
+                } else {
+                    const button = document.createElement("button"); button.className = "btn-action"; button.disabled = true;
+                    button.textContent = MODO_DEMO ? "Somente demo" : "Sem ação"; action.appendChild(button);
+                }
+                tr.append(name, amount, date, status, action); tbody.appendChild(tr);
             }
         }
 
-        // ================= LOGS EM TEMPO REAL =================
-        let logs = [
-            { origem: "Compra de Dica", desc: "Dica 3 - Arena 2 (Palavra Secreta)", valor: 2.00, hora: "Agora mesmo" },
-            { origem: "AdSense (Anúncio)", desc: "Visualização Modo Grátis (30s)", valor: 0.05, hora: "1 min atrás" },
-            { origem: "Compra de Dica", desc: "Dica 1 - Arena 1 (Quem Sou)", valor: 0.50, hora: "3 mins atrás" },
-            { origem: "AdSense (Anúncio)", desc: "Visualização Banner Destaque", valor: 0.02, hora: "5 mins atrás" },
-        ];
-
-        function gerarLogsIniciais() {
-            renderizarLogs();
+        async function revisarSaque(id, button) {
+            if (!id || !confirm("Enviar solicitação ao backend para revisão? Isso não confirma pagamento PIX.")) return;
+            button.disabled = true;
+            try {
+                await ArenaApp.request("/admin/withdrawals/" + encodeURIComponent(id) + "/approve", { method: "POST", body: {} });
+                el("api-status").textContent = "Solicitação encaminhada para revisão no servidor; pagamento não confirmado por esta tela.";
+                window.onload();
+            } catch (erro) {
+                button.disabled = false;
+                alert(erro.message || "Não foi possível atualizar a solicitação.");
+            }
         }
 
-        function renderizarLogs() {
-            const tbody = document.getElementById("tabela-logs");
-            tbody.innerHTML = "";
-            logs.forEach(log => {
-                let corValor = log.origem === "AdSense (Anúncio)" ? "var(--warning)" : "var(--primary)";
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="font-weight:bold;">${log.origem}</td>
-                        <td style="color:var(--text-muted);">${log.desc}</td>
-                        <td style="color:${corValor}; font-weight:bold;">+ ${formatarMoeda(log.valor)}</td>
-                        <td style="color:var(--text-muted); font-size:0.85rem;">${log.hora}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function iniciarSimuladorTempoReal() {
-            // A cada 8 segundos simula uma nova entrada de dinheiro
-            setInterval(() => {
-                let tipos = [
-                    { origem: "AdSense (Anúncio)", desc: "Visualização Modo Grátis", valor: 0.05 },
-                    { origem: "AdSense (Anúncio)", desc: "Clique no Banner Rodapé", valor: 0.15 },
-                    { origem: "Compra de Dica", desc: "Dica 2 comprada - Arena 3", valor: 1.50 },
-                    { origem: "Compra de Dica", desc: "Dica 1 comprada - Arena 1", valor: 0.50 }
-                ];
-                let novo = tipos[Math.floor(Math.random() * tipos.length)];
-                novo.hora = "Agora mesmo";
-
-                // Atualiza a lista de logs
-                logs.unshift(novo);
-                if(logs.length > 5) logs.pop();
-                renderizarLogs();
-
-                // Adiciona o valor na Receita Bruta
-                let receitaAtual = parseFloat(localStorage.getItem("rp_admin_rev_v5"));
-                receitaAtual += novo.valor;
-                localStorage.setItem("rp_admin_rev_v5", receitaAtual);
-                atualizarCards(receitaAtual);
-
-            }, 8000);
-        }
-
-        function sair() {
-            alert("Desconectando do Painel Admin...");
-            window.location.href = "index.html"; // Volta para o jogo
+        function renderTransacoes(items) {
+            const tbody = el("tabela-logs"); tbody.replaceChildren();
+            if (!items.length) return emptyRow(tbody, "Nenhuma transação recebida do servidor.", 4);
+            for (const item of items) {
+                const tr = document.createElement("tr");
+                const origin = document.createElement("td"); origin.textContent = item.origin || "—";
+                const desc = document.createElement("td"); desc.textContent = item.description || "—";
+                const amount = document.createElement("td"); amount.textContent = moeda(item.amount);
+                const date = document.createElement("td"); date.textContent = item.createdAt ? new Date(item.createdAt).toLocaleString("pt-BR") : "—";
+                tr.append(origin, desc, amount, date); tbody.appendChild(tr);
+            }
         }
     </script>
 </body>
