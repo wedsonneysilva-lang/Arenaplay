@@ -8,7 +8,7 @@ O cadastro não pede CPF no HTML. Sessão real deve ser criada e mantida pelo se
 
 ## Contrato esperado
 
-Configure `<meta name="arena-api-base" content="/api">` antes de `api.js` se o prefixo mudar. O padrão é mesma origem em `/api`. O backend deve rejeitar CORS de origens não autorizadas, validar `Origin` e o cookie/header CSRF nas mutações, aplicar rate limiting e autorização por rota. Nunca confiar em valores de pontos, saldo, valor de saque, apelido ou papel administrativo recebidos do navegador.
+Configure `<meta name="arena-api-base" content="/api">` antes de `api.js` se o prefixo mudar. O padrão é mesma origem em `/api`. O backend deve verificar e-mail/telefone antes de emitir sessão, rejeitar CORS de origens não autorizadas, validar `Origin` e o cookie/header CSRF nas mutações, aplicar rate limiting e autorização por rota. Nunca confiar em valores de pontos, saldo, valor de saque, apelido ou papel administrativo recebidos do navegador.
 
 | Rota | Acesso | Uso |
 | --- | --- | --- |
