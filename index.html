@@ -119,8 +119,9 @@
     </style>
 </head>
 <body>
+<div id="mode-banner" role="status" style="width:100%;max-width:800px;padding:10px 14px;margin:0 auto 12px;border-radius:10px;text-align:center;font-weight:800;background:#7f1d1d;color:#fff">MODO REAL — dados somente do servidor</div>
 
-<div class="banner-destaque">🌟 Acumule pontos e ganhe R$ 100! Comece Grátis 🌟</div>
+<div class="banner-destaque">🌟 Desafios de conhecimento — valores e saques reais indisponíveis nesta versão 🌟</div>
 
 <div class="ad-container ad-top">
     <ins class="adsbygoogle"
@@ -137,7 +138,7 @@
 <div id="painel-usuario" class="painel-usuario hidden">
     <div class="painel-header">
         <div class="user-name">👤 <span id="display-user">Jogador</span></div>
-        <div class="online-counter"><span class="dot"></span> <span id="contador-online">546</span> Online</div>
+        <div class="online-counter"><span class="dot"></span> <span id="contador-online">—</span> Online</div>
     </div>
     <div class="painel-stats">
         <div class="stat-box">
@@ -162,7 +163,7 @@
 <div id="view-login" class="screen">
     <div class="card-menu">
         <h1 style="color: var(--primary); font-size: 2rem; margin-bottom: 5px; font-weight: 900;">RendaPlay Pro</h1>
-        <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem;">Crie sua conta para disputar prêmios e sacar via PIX.</p>
+        <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem;">Crie sua conta para testar. Prêmios e saques reais dependem da integração segura com o servidor.</p>
         
         <form id="form-cadastro" onsubmit="fazerCadastroLogin(event)">
             <div class="form-group">
@@ -181,11 +182,6 @@
                 <label class="form-label">Telefone (WhatsApp)</label>
                 <input type="tel" id="cad-telefone" class="input-jogo" placeholder="(11) 99999-9999" required>
             </div>
-            <div class="form-group">
-                <label class="form-label">CPF (Para segurança)</label>
-                <input type="text" id="cad-cpf" class="input-jogo" placeholder="Apenas números" required>
-            </div>
-            
             <button type="submit" class="btn btn-primary" style="margin-top: 10px;">CADASTRAR E ENTRAR</button>
         </form>
     </div>
@@ -202,7 +198,7 @@
             <div class="arena-item">
                 <div class="arena-header">
                     <span class="arena-title">⚡ Arena 1: Quem sou?</span>
-                    <span class="arena-prize">1º Lugar: R$ 1.000</span>
+                    <span class="arena-prize">Prêmio indisponível nesta versão</span>
                 </div>
                 <p class="arena-desc">Charadas em 60s. 1 palavra = 100 pts. 10 palavras = 1.000 pts.</p>
                 <button class="btn btn-primary" onclick="iniciarFluxoArena(1)">Jogar Arena 1</button>
@@ -211,7 +207,7 @@
             <div class="arena-item">
                 <div class="arena-header">
                     <span class="arena-title">🧩 Arena 2: Palavra Secreta</span>
-                    <span class="arena-prize">Prêmio: R$ 3.000</span>
+                    <span class="arena-prize">Prêmio indisponível nesta versão</span>
                 </div>
                 <p class="arena-desc">Descubra 1 palavra oculta em 60s = 1.000 pts.</p>
                 <button class="btn btn-success" onclick="iniciarFluxoArena(2)">Jogar Arena 2</button>
@@ -220,7 +216,7 @@
             <div class="arena-item">
                 <div class="arena-header">
                     <span class="arena-title">⌨️ Arena 3: Qual a Palavra?</span>
-                    <span class="arena-prize">Prêmio: R$ 500</span>
+                    <span class="arena-prize">Prêmio indisponível nesta versão</span>
                 </div>
                 <p class="arena-desc">Digite 10 palavras em 60s. 1 palavra = 100 pts. 10 palavras = 1.000 pts.</p>
                 <button class="btn btn-warning" onclick="iniciarFluxoArena(3)">Jogar Arena 3</button>
@@ -251,7 +247,7 @@
             <div class="hud-item"><span class="hud-label">Pontos</span><span class="hud-val val-pontos" id="hud-pontos">0</span></div>
             <div class="hud-item"><span class="hud-label">Acertos</span><span class="hud-val" id="hud-acertos">0</span></div>
             <div class="hud-item"><span class="hud-label">Pos. Rank</span><span class="hud-val val-rank" id="hud-rank">1º</span></div>
-            <div class="hud-item"><span class="hud-label">Online</span><span class="hud-val hud-online" id="hud-online">546</span></div>
+            <div class="hud-item"><span class="hud-label">Online</span><span class="hud-val hud-online" id="hud-online">—</span></div>
         </div>
         
         <div class="loja-dicas">
@@ -301,14 +297,7 @@
             <p style="color: var(--warning); font-size:0.8rem;" id="aviso-saque">Saque a partir de R$ 100,00 (20.000 pts)</p>
         </div>
         
-        <div class="form-group" style="text-align: left; margin-bottom: 20px;">
-            <label class="form-label">Escolha a Chave PIX cadastrada:</label>
-            <select id="select-chave-pix" class="select-jogo">
-                <option value="cpf">CPF</option>
-                <option value="telefone">Telefone (Celular)</option>
-                <option value="email">E-mail</option>
-            </select>
-        </div>
+        <p id="aviso-chave-pix" style="color:var(--text-muted);margin:0 0 16px">A chave PIX verificada fica no servidor e nunca é exibida neste navegador.</p>
 
         <button class="btn btn-success" id="btn-sacar-pix" onclick="solicitarSaque()" disabled>SACAR VIA PIX</button>
         <button class="btn btn-dark" style="margin-top: 10px;" onclick="document.getElementById('modal-carteira').classList.add('hidden')">FECHAR</button>
@@ -339,8 +328,9 @@
     </script>
 </div>
 
+<script src="api.js"></script>
 <script>
-    // ================= BANCO DE DADOS (Simulação) =================
+    // ================= BANCO DE DADOS DO JOGO =================
     const dbTemas = {
         "Arte": [{ word: "PICASSO", hints: ["Pintor espanhol", "Criou o Cubismo", "Pintou Guernica"] }, { word: "MUSEU", hints: ["Guarda a história", "Local de exposição", "O Louvre é um"] }, { word: "AQUARELA", hints: ["Técnica de pintura", "Usa muita água", "Música famosa"] }, { word: "ESCULTURA", hints: ["Arte em 3D", "Feita de mármore", "O Pensador"] }, { word: "CINEMA", hints: ["Sétima Arte", "Exibe filmes", "Hollywood"] }],
         "Bíblico": [{ word: "GENESIS", hints: ["Primeiro livro", "Significa Origem", "Criação do mundo"] }, { word: "MOISES", hints: ["Abriu o mar", "10 Mandamentos", "Príncipe do Egito"] }, { word: "GOLIAS", hints: ["Gigante", "Filisteu", "Derrotado por Davi"] }, { word: "ARCA", hints: ["Barco gigante", "Madeira", "Noé construiu"] }, { word: "MANA", hints: ["Alimento", "Caiu do céu", "Sustento no deserto"] }],
@@ -378,61 +368,66 @@
 
     const formatarMoeda = (valor) => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-    window.onload = () => {
-        let saved = localStorage.getItem("rp_user_v6");
-        if(saved) {
-            dadosUsuario = JSON.parse(saved);
-            document.getElementById("cad-nome").value = dadosUsuario.nome;
-            document.getElementById("cad-apelido").value = dadosUsuario.apelido;
-            document.getElementById("cad-email").value = dadosUsuario.email;
-            document.getElementById("cad-telefone").value = dadosUsuario.telefone;
-            document.getElementById("cad-cpf").value = dadosUsuario.cpf;
-            iniciarSessaoLocal();
-        }
+    const MODO_DEMO = ArenaApp.mode === "demo";
+    function mostrarModo() {
+        const banner = document.getElementById("mode-banner");
+        banner.textContent = MODO_DEMO
+            ? "MODO DEMONSTRAÇÃO — dados e pontos fictícios; sem valor ou saque real"
+            : "MODO REAL — dados carregados somente do servidor";
+        banner.style.background = MODO_DEMO ? "#713f12" : "#7f1d1d";
+        if (MODO_DEMO) { document.getElementById("contador-online").textContent = "546"; document.getElementById("hud-online").textContent = "546"; }
+    }
+
+    window.onload = async () => {
+        mostrarModo();
         renderizarBotoesTemas();
-        iniciarSimuladorOnline();
+        if (MODO_DEMO) { iniciarSimuladorOnline(); return; }
+        try {
+            const result = await ArenaApp.request("/me");
+            iniciarSessao(result.user || result);
+        } catch (_) { /* Sem sessão/API: cadastro fica visível, sem dados locais. */ }
     };
 
-    // ================= SISTEMA DE CADASTRO E LOGIN =================
-    function fazerCadastroLogin(e) {
+    async function fazerCadastroLogin(e) {
         e.preventDefault();
-        const nome = document.getElementById("cad-nome").value.trim();
-        const apelido = document.getElementById("cad-apelido").value.trim();
-        const email = document.getElementById("cad-email").value.trim();
-        const telefone = document.getElementById("cad-telefone").value.trim();
-        const cpf = document.getElementById("cad-cpf").value.trim();
-
-        if(!nome || !apelido || !email || !telefone || !cpf) return alert("Preencha todos os campos do cadastro!");
-
-        dadosUsuario = { nome, apelido, email, telefone, cpf };
-        localStorage.setItem("rp_user_v6", JSON.stringify(dadosUsuario));
-
-        iniciarSessaoLocal();
+        const user = {
+            name: document.getElementById("cad-nome").value.trim(),
+            nickname: document.getElementById("cad-apelido").value.trim(),
+            email: document.getElementById("cad-email").value.trim(),
+            phone: document.getElementById("cad-telefone").value.trim()
+        };
+        if (!user.name || !user.nickname || !user.email || !user.phone) return alert("Preencha todos os campos.");
+        try {
+            if (MODO_DEMO) iniciarSessao({ ...user, points: 0, totalCorrect: 0, availableBalance: 0 });
+            else {
+                const result = await ArenaApp.request("/auth/register", { method: "POST", body: user });
+                iniciarSessao(result.user || result);
+            }
+        } catch (erro) { alert(erro.message || "Não foi possível concluir o cadastro."); }
     }
 
-    function iniciarSessaoLocal() {
-        nomeJogador = dadosUsuario.apelido; 
-        document.getElementById("display-user").innerText = nomeJogador;
-        
-        // Puxa histórico pelo CPF do usuário logado
-        globalPontos = parseInt(localStorage.getItem(`rp_pts_${dadosUsuario.cpf}`)) || 0;
-        globalAcertos = parseInt(localStorage.getItem(`rp_acertos_${dadosUsuario.cpf}`)) || 0;
-        
+    function iniciarSessao(perfil) {
+        dadosUsuario = perfil;
+        nomeJogador = perfil.nickname || perfil.apelido || "Jogador";
+        globalPontos = Number(perfil.points || 0);
+        globalAcertos = Number(perfil.totalCorrect || 0);
+        globalSaldo = Number(perfil.availableBalance || 0);
+        document.getElementById("display-user").textContent = nomeJogador;
         atualizarPlacaresGlobais();
         gerarRankingBase();
-        
-        document.getElementById("painel-usuario").classList.remove('hidden');
-        document.getElementById("view-login").classList.add('hidden');
-        document.getElementById("view-lobby").classList.remove('hidden');
+        document.getElementById("painel-usuario").classList.remove("hidden");
+        document.getElementById("view-login").classList.add("hidden");
+        document.getElementById("view-lobby").classList.remove("hidden");
     }
 
-    function fazerLogout() {
-        localStorage.removeItem("rp_user_v6"); 
-        document.getElementById("painel-usuario").classList.add('hidden');
-        document.getElementById("view-lobby").classList.add('hidden');
-        document.getElementById("view-arena").classList.add('hidden');
+    async function fazerLogout() {
+        if (!MODO_DEMO) { try { await ArenaApp.request("/auth/logout", { method: "POST" }); } catch (_) {} }
+        dadosUsuario = null;
+        document.getElementById("painel-usuario").classList.add("hidden");
+        document.getElementById("view-lobby").classList.add("hidden");
+        document.getElementById("view-arena").classList.add("hidden");
         document.getElementById("form-cadastro").reset();
-        document.getElementById("view-login").classList.remove('hidden');
+        document.getElementById("view-login").classList.remove("hidden");
     }
 
     function renderizarBotoesTemas() {
@@ -447,83 +442,44 @@
         });
     }
 
-    // ================= FINANÇAS, ADMIN E CARTEIRA =================
+    // ================= CARTEIRA E SAQUES =================
     function registrarAcerto() {
-        // Regra de Ouro: Acerte 1 palavra = 100 pontos
-        globalPontos += 100;
-        globalAcertos += 1;
-        acertosNaRodada += 1;
+        if (!MODO_DEMO) return;
+        globalPontos += 100; globalAcertos += 1; acertosNaRodada += 1;
         atualizarPlacaresGlobais();
     }
-
     function atualizarPlacaresGlobais() {
-        globalSaldo = globalPontos * 0.005; // 1000 pts = R$ 5
-        
-        // Atualiza Painel Principal
-        document.getElementById("display-pontos").innerText = globalPontos;
-        document.getElementById("display-saldo").innerText = formatarMoeda(globalSaldo);
-        document.getElementById("display-acertos").innerText = globalAcertos;
-
-        // Atualiza HUD da Arena
-        document.getElementById("hud-pontos").innerText = globalPontos;
-        document.getElementById("hud-acertos").innerText = globalAcertos;
-        
-        // Salva DB
-        if(dadosUsuario) {
-            localStorage.setItem(`rp_pts_${dadosUsuario.cpf}`, globalPontos);
-            localStorage.setItem(`rp_acertos_${dadosUsuario.cpf}`, globalAcertos);
-        }
+        if (MODO_DEMO) globalSaldo = globalPontos * 0.005;
+        document.getElementById("display-pontos").textContent = globalPontos;
+        document.getElementById("display-saldo").textContent = formatarMoeda(globalSaldo);
+        document.getElementById("display-acertos").textContent = globalAcertos;
+        document.getElementById("hud-pontos").textContent = globalPontos;
+        document.getElementById("hud-acertos").textContent = globalAcertos;
         atualizaMeuRank();
     }
-
-    function adicionarReceitaAdmin(valorReal) {
-        let revAdmin = parseFloat(localStorage.getItem("rp_admin_rev_v6")) || 0;
-        revAdmin += valorReal;
-        localStorage.setItem("rp_admin_rev_v6", revAdmin);
-    }
-
-    function abrirCarteira() { 
-        document.getElementById('modal-valor-saldo').innerText = formatarMoeda(globalSaldo);
-        const btnSacar = document.getElementById("btn-sacar-pix");
+    function abrirCarteira() {
+        document.getElementById("modal-valor-saldo").textContent = formatarMoeda(globalSaldo);
+        const btn = document.getElementById("btn-sacar-pix");
         const aviso = document.getElementById("aviso-saque");
-        if(globalSaldo >= 100) {
-            btnSacar.disabled = false;
-            aviso.innerText = "🎉 SALDO LIBERADO PARA SAQUE!";
-            aviso.style.color = "var(--success)";
+        if (MODO_DEMO) {
+            btn.disabled = globalSaldo < 100;
+            aviso.textContent = "DEMO: saldo e saques são fictícios.";
         } else {
-            btnSacar.disabled = true;
-            aviso.innerText = `Faltam: ${formatarMoeda(100 - globalSaldo)} para sacar.`;
-            aviso.style.color = "var(--warning)";
+            btn.disabled = true;
+            aviso.textContent = "Saque real indisponível até a API segura de carteira estar configurada.";
         }
-        document.getElementById('modal-carteira').classList.remove('hidden'); 
+        document.getElementById("modal-carteira").classList.remove("hidden");
     }
-
-    function solicitarSaque() {
-        if(globalSaldo >= 100) {
-            const selectPix = document.getElementById("select-chave-pix").value;
-            let chaveEscolhida = dadosUsuario[selectPix]; 
-            
-            globalPontos -= 20000; // Deduz os 20k pts (R$ 100)
-            atualizarPlacaresGlobais();
-            
-            // Envia para a Fila do Admin
-            let filaSaques = JSON.parse(localStorage.getItem("rp_fila_saques_v6")) || [];
-            filaSaques.push({
-                jogador: dadosUsuario.nome,
-                chavePix: chaveEscolhida,
-                tipoChave: selectPix,
-                valor: 100.00,
-                data: new Date().toLocaleString(),
-                status: "Pendente"
-            });
-            localStorage.setItem("rp_fila_saques_v6", JSON.stringify(filaSaques));
-
-            alert(`✅ PIX Solicitado!\nA chave enviada foi a sua chave de ${selectPix.toUpperCase()}: ${chaveEscolhida}.\nO valor sairá da Fila de Pagamentos em breve.`);
-            document.getElementById('modal-carteira').classList.add('hidden');
-        }
+    async function solicitarSaque() {
+        if (!MODO_DEMO) return alert("Saques reais indisponíveis: configure a API segura de carteira.");
+        if (globalSaldo < 100) return;
+        globalPontos -= 20000; atualizarPlacaresGlobais();
+        alert("DEMO: solicitação fictícia. Nenhum pagamento foi enviado.");
+        document.getElementById("modal-carteira").classList.add("hidden");
     }
 
     function comprarDica(nivel, preco) {
+        if (!MODO_DEMO) return alert("Pontuação e compras reais só serão liberadas com validação no servidor.");
         if(!jogoAtivo) return;
         if(globalSaldo >= preco) {
             let custoPontos = preco / 0.005;
@@ -547,6 +503,7 @@
 
     // ================= FLUXO DAS ARENAS =================
     function iniciarFluxoArena(tipoArena) {
+        if (!MODO_DEMO) return alert("Partidas com pontuação real indisponíveis. Use ?mode=demo para testar.");
         arenaAtual = tipoArena;
         document.getElementById("view-lobby").classList.add("hidden");
         document.getElementById("modal-pre-jogo").classList.remove("hidden");
@@ -690,23 +647,31 @@
 
     // ================= RANKING TOP 15 E CONTADORES =================
     function iniciarSimuladorOnline() {
+        if (!MODO_DEMO) return;
         let contador = 546;
         setInterval(() => {
             contador += Math.floor(Math.random() * 5) - 2;
-            if(contador < 500) contador = 500;
-            
-            document.getElementById("contador-online").innerText = contador;
-            if(document.getElementById("hud-online")) document.getElementById("hud-online").innerText = contador;
-            
-            if(Math.random() > 0.6) moverBotsNoRank();
+            if (contador < 500) contador = 500;
+            document.getElementById("contador-online").textContent = contador;
+            if (document.getElementById("hud-online")) document.getElementById("hud-online").textContent = contador;
+            if (Math.random() > 0.6) moverBotsNoRank();
         }, 5000);
     }
-
-    function gerarRankingBase() {
-        const nomesBase = ["Lucas_Pro", "Maria_Win", "Carlos123", "Ana_Gamer", "Pedro_BR", "Ju_Ninja", "Beto_Cash", "Suh_99", "GamerX", "Vini_Lord", "LeticiaA", "Rafa_Z", "Dani_Top", "Leo_King", "Mestre_Loto"];
-        rankGeral = nomesBase.map(n => ({ nome: n, pontos: Math.floor(Math.random()*15000)+5000, isMe: false }));
-        rankGeral.push({ nome: nomeJogador, pontos: globalPontos, isMe: true });
-        atualizaMeuRank();
+    async function gerarRankingBase() {
+        if (MODO_DEMO) {
+            const nomes = ["Lucas_Pro", "Maria_Win", "Carlos123", "Ana_Gamer", "Pedro_BR"];
+            rankGeral = nomes.map((nome, i) => ({ nome, pontos: 12000 - i * 700, isMe: false }));
+            rankGeral.push({ nome: nomeJogador, pontos: globalPontos, isMe: true });
+            atualizaMeuRank(); return;
+        }
+        try {
+            const result = await ArenaApp.request("/ranking?limit=15");
+            rankGeral = (result.items || []).map(item => ({
+                nome: String(item.nickname || "Jogador"), pontos: Number(item.points || 0),
+                isMe: Boolean(dadosUsuario && item.userId === dadosUsuario.id)
+            }));
+            atualizaMeuRank();
+        } catch (_) { rankGeral = []; document.getElementById("display-rank").textContent = "—"; }
     }
 
     function atualizaMeuRank() {
@@ -723,7 +688,8 @@
     }
 
     function moverBotsNoRank() {
-        rankGeral.forEach(b => { if(!b.isMe && Math.random() > 0.5) b.pontos += 100; }); // +100 aos bots
+        if (!MODO_DEMO) return;
+        rankGeral.forEach(b => { if (!b.isMe && Math.random() > 0.5) b.pontos += 100; });
         atualizaMeuRank();
     }
 
@@ -739,15 +705,11 @@
         }
 
         top15.forEach((r) => {
-            let realIndex = rankGeral.findIndex(x => x.nome === r.nome) + 1;
-            let div = document.createElement("div");
-            div.className = `rank-row ${r.isMe ? 'is-me' : ''}`;
-            div.innerHTML = `
-                <span class="rank-pos">${realIndex}º</span>
-                <span class="rank-name">${r.nome}</span>
-                <span class="rank-pts">${r.pontos} pts</span>
-            `;
-            container.appendChild(div);
+            const pos = document.createElement("span"); pos.className = "rank-pos"; pos.textContent = `${rankGeral.indexOf(r)+1}º`;
+            const name = document.createElement("span"); name.className = "rank-name"; name.textContent = r.nome;
+            const pts = document.createElement("span"); pts.className = "rank-pts"; pts.textContent = `${r.pontos} pts`;
+            const row = document.createElement("div"); row.className = `rank-row ${r.isMe ? "is-me" : ""}`;
+            row.append(pos, name, pts); container.appendChild(row);
         });
 
         document.getElementById('modal-ranking').classList.remove('hidden');
