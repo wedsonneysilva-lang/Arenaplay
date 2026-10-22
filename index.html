@@ -151,7 +151,7 @@
         </div>
         <div class="stat-box" onclick="abrirRanking15()" style="border-color: rgba(56,189,248,0.3); background: rgba(56,189,248,0.05);">
             <span class="stat-label">Posição Rank</span>
-            <span class="stat-value val-rank" id="display-rank">12º</span>
+            <span class="stat-value val-rank" id="display-rank">—</span>
         </div>
         <div class="stat-box">
             <span class="stat-label">Acertos totais</span>
@@ -675,13 +675,18 @@
     }
 
     function atualizaMeuRank() {
+        if (!MODO_DEMO && rankGeral.length === 0) {
+            document.getElementById("display-rank").textContent = "—";
+            if (document.getElementById("hud-rank")) document.getElementById("hud-rank").textContent = "—";
+            return;
+        }
         let eu = rankGeral.find(r => r.isMe);
         if(eu) {
-            eu.nome = nomeJogador; 
+            eu.nome = nomeJogador;
             eu.pontos = globalPontos;
         }
         rankGeral.sort((a,b) => b.pontos - a.pontos);
-        
+
         let minhaPos = rankGeral.findIndex(r => r.isMe) + 1;
         document.getElementById("display-rank").innerText = `${minhaPos}º`;
         if(document.getElementById("hud-rank")) document.getElementById("hud-rank").innerText = `${minhaPos}º`;
